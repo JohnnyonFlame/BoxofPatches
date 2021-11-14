@@ -41,20 +41,19 @@ void ShovelKnightPatches()
     >(mmaps, &map);
 
     if (!nag_ptr) {
-        std::cout << "Failed to acquire nag_ptr signature!\n";
-        exit(-1);
-    }
-    
-    std::cout << "Found sig at 0x" << std::hex << (uintptr_t)nag_ptr << "\n";
-    
-    struct NAG_PAYLOAD : Xbyak::CodeGenerator {
-        NAG_PAYLOAD(uint8_t *ptr) : Xbyak::CodeGenerator(4096, (void *)ptr)
-        {
-            inc(dword[edi + 0x118]);
-            jmp(&ptr[0xD3], T_NEAR);
-        }
-    };
+        std::cout << "Failed to acquire nag_ptr signature! Is this a GOG release?\n";
+    } else {
+        std::cout << "Found sig at 0x" << std::hex << (uintptr_t)nag_ptr << "\n";
+        
+        struct NAG_PAYLOAD : Xbyak::CodeGenerator {
+            NAG_PAYLOAD(uint8_t *ptr) : Xbyak::CodeGenerator(4096, (void *)ptr)
+            {
+                inc(dword[edi + 0x118]);
+                jmp(&ptr[0xD3], T_NEAR);
+            }
+        };
 
-    NAG_PAYLOAD nag_payload(nag_ptr);
-    nag_payload.ready();
+        NAG_PAYLOAD nag_payload(nag_ptr);
+        nag_payload.ready();
+    }
 }
